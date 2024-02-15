@@ -35,7 +35,7 @@ if __name__=="__main__":
         observation_error = observation[0] + np.rad2deg(observation[2]) - 0 - observation[1]
         action = agent.choose_action(observation_error)
         observation, reward, done, truncated, info = env.step(action)
-        score += 1
+        score += reward
     env.close()
     print(score)
 
