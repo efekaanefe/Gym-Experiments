@@ -22,6 +22,7 @@ class QLearningAgent: # Quality Learning
 if __name__=="__main__":
     # https://www.youtube.com/watch?v=JNKvJEzuNsc
     # https://github.com/udacity/reinforcement-learning/blob/master/notebooks/Discretization.ipynb
+    # https://www.youtube.com/watch?v=yMk_XtIEzH8&list=PLQVvvaa0QuDezJFIOU5wDdfy4e9vdnx-7
     env = gym.make("CartPole-v1", render_mode = "human")
 
     lower_bounds = [ env.observation_space.low[2], -np.radians(50) ]
