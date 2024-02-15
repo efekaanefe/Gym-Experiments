@@ -2,7 +2,7 @@ import gymnasium as gym
 import numpy as np
 
 
-class PIDCartPoleAgent:
+class PIDAgent:
     def __init__(self, P, I, D):
         self.p = P
         self.i = I
@@ -25,7 +25,7 @@ if __name__=="__main__":
     env = gym.make("CartPole-v1", render_mode = "human")
     P, I, D = 15, 5, 100 # score = 2765 frame
 
-    agent = PIDCartPoleAgent(P, I, D)
+    agent = PIDAgent(P, I, D)
     observation, info = env.reset()
     # original = observation[2]
     done = False
