@@ -7,20 +7,18 @@ if __name__=="__main__":
     # https://github.com/udacity/reinforcement-learning/blob/master/notebooks/Discretization.ipynb
     # https://www.youtube.com/watch?v=yMk_XtIEzH8&list=PLQVvvaa0QuDezJFIOU5wDdfy4e9vdnx-7
 
-    # env = gym.make("CartPole-v1", render_mode = "human")
-    env = gym.make("MountainCar-v0", render_mode = "human")
-    
-    # only will look to 0th and 2nd observations
-    DISCRETE_OBS_SPACE_SIZE = [20] * len(env.observation_space.high)
-    discrete_os_win_size = (env.observation_space.high - env.observation_space.low)/DISCRETE_OBS_SPACE_SIZE
-    print(discrete_os_win_size)
-    print(DISCRETE_OBS_SPACE_SIZE+ [env.action_space.n])
-    # every combination of observations and the action spaces
-    q_table = np.random.uniform(low=-2, high=2, size=(DISCRETE_OBS_SPACE_SIZE + [env.action_space.n]))
+    env = gym.make("CartPole-v1", render_mode = "human")
 
-    
-    def discretizer(position , _ , angle, __): # only two observations
-        return 0
+    # only working with obs[0] and obs[2], since others can be +-inf, not good for q-learning
+    max_obs_values = env.observation_space.high
+    min_obs_values = env.observation_space.low
+    max_obs_values = np.array([max_obs_values[0], np.rad2deg(max_obs_values[2])])
+    min_obs_values = np.array([min_obs_values[0], np.rad2deg(min_obs_values[2])])
+
+    DISCRETE_OBS_SPACE_SIZE = [20]* len(max_obs_values) # these are the what the max values will corresponds to
+    # DISCRETE_OBS_SPACE_SIZE = [20, 30] 
+    discrete_obs_space_step_size = (max_obs_values - min_obs_values) / DISCRETE_OBS_SPACE_SIZE
+
 
     num_episodes = 1
     for e in range(num_episodes):
