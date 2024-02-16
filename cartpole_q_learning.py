@@ -7,7 +7,8 @@ if __name__=="__main__":
     # https://github.com/udacity/reinforcement-learning/blob/master/notebooks/Discretization.ipynb
     # https://www.youtube.com/watch?v=yMk_XtIEzH8&list=PLQVvvaa0QuDezJFIOU5wDdfy4e9vdnx-7
 
-    env = gym.make("CartPole-v1", render_mode = "human")
+    # env = gym.make("CartPole-v1", render_mode = "human")
+    env = gym.make("CartPole-v1")
 
     # only working with obs[0] and obs[2], since others can have value of +-inf, not good for q-learning
     max_obs_values = env.observation_space.high
@@ -22,7 +23,7 @@ if __name__=="__main__":
     def discretizer(obs):
         obs = np.array([obs[0], obs[2]])
         discrete_obs = (obs - min_obs_values)/discrete_obs_space_step_size
-        return discrete_obs.astype(np.int16)
+        return tuple(discrete_obs.astype(np.int16)) # tuple to make 
     
     ## CONSTANTS, these may be adjusted based on episode number
     LEARNING_RATE = 0.1
@@ -30,15 +31,15 @@ if __name__=="__main__":
     EXPLORATION_RATE = 0.2
 
     ## Q-table
-    q_table = np.random.uniform(min=-2,max=2, size=(DISCRETE_OBS_SPACE_SIZE + [env.action_space.n]))
-
-    num_episodes = 1
+    q_table = np.random.uniform(low=-2,high=2, size=(DISCRETE_OBS_SPACE_SIZE + [env.action_space.n]))
+    num_episodes = 100
+    scores = []
     for e in range(num_episodes):
         observation, info = env.reset()
         current_obs = discretizer(observation) 
         done = False; score = 0
         while not done:
-            action = np.argmax(q_table[current_obs[0]][current_obs[1]])
+            action = np.argmax(q_table[current_obs])
             if EXPLORATION_RATE > np.random.random():
                 action = env.action_space.sample() 
 
@@ -46,18 +47,25 @@ if __name__=="__main__":
             new_state = discretizer(observation)
 
             ## TRAINING
-            # learnt_value = agent.new_Q_value(reward , new_state )
-            # old_value = agent.Q_table[current_state][action]
-            # agent.Q_table[current_state][action] = (1-agent.lr)*old_value + agent.lr*learnt_value
+            if not done:
+                max_future_q = np.max(q_table[current_obs])
+                current_q = q_table[current_obs + (action,)]
+                new_q = (1-LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
+                q_table[current_obs + (action,)] = new_q
+            else:
+                q_table[current_obs + (action,)] = 0
 
 
             current_state = new_state
             score += reward
-            env.render()
+            # env.render()
 
             # print(current_state, observation)
-        print(f"Episode {e}, score {score}")
+        scores.append(score)
+        # print(f"Episode {e}, score {score}")
 
     env.close()
 
-
+    import matplotlib.pyplot as plt
+    plt.plot(scores)
+    plt.show()
