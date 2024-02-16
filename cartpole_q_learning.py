@@ -17,11 +17,11 @@ if __name__=="__main__":
     min_obs_values = np.array([min_obs_values[0], np.rad2deg(min_obs_values[2])])
 
     ## DISCRETIZING
-    DISCRETE_OBS_SPACE_SIZE = [20]* len(max_obs_values) # these are the what the max values will corresponds to
+    DISCRETE_OBS_SPACE_SIZE = [10]* len(max_obs_values) # these are the what the max values will corresponds to
     discrete_obs_space_step_size = (max_obs_values - min_obs_values) / DISCRETE_OBS_SPACE_SIZE
 
     def discretizer(obs):
-        obs = np.array([obs[0], obs[2]])
+        obs = np.array([obs[0], obs[1]])
         discrete_obs = (obs - min_obs_values)/discrete_obs_space_step_size
         return tuple(discrete_obs.astype(np.int16)) # tuple to make 
     
@@ -31,17 +31,19 @@ if __name__=="__main__":
     EXPLORATION_RATE = 0.2
 
     ## Q-table
-    q_table = np.random.uniform(low=-2,high=2, size=(DISCRETE_OBS_SPACE_SIZE + [env.action_space.n]))
-    num_episodes = 100
+    q_table = np.zeros(DISCRETE_OBS_SPACE_SIZE + [env.action_space.n])
+    num_episodes = 100000
     scores = []
-    for e in range(num_episodes):
+    # for e in range(num_episodes):
+    e = 0
+    while True:
         observation, info = env.reset()
         current_obs = discretizer(observation) 
         done = False; score = 0
         while not done:
             action = np.argmax(q_table[current_obs])
             if EXPLORATION_RATE > np.random.random():
-                action = env.action_space.sample() 
+                 action = env.action_space.sample() 
 
             observation, reward, done, _, _ = env.step(action)
             new_state = discretizer(observation)
@@ -52,9 +54,7 @@ if __name__=="__main__":
                 current_q = q_table[current_obs + (action,)]
                 new_q = (1-LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
                 q_table[current_obs + (action,)] = new_q
-            else:
-                q_table[current_obs + (action,)] = 0
-
+                print(new_q) # new_q isn't changing
 
             current_state = new_state
             score += reward
@@ -63,6 +63,9 @@ if __name__=="__main__":
             # print(current_state, observation)
         scores.append(score)
         # print(f"Episode {e}, score {score}")
+        if score > 500:
+            break
+        e += 1
 
     env.close()
 
