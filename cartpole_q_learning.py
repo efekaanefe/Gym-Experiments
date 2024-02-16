@@ -28,7 +28,7 @@ if __name__=="__main__":
     ## CONSTANTS, these may be adjusted based on episode number
     LEARNING_RATE = 0.1
     DISCOUNT = 0.95
-    EXPLORATION_RATE = 0.2
+    EXPLORATION_RATE = 0.5
 
     ## Q-table
     q_table = np.zeros(DISCRETE_OBS_SPACE_SIZE + [env.action_space.n])
@@ -46,23 +46,23 @@ if __name__=="__main__":
                  action = env.action_space.sample() 
 
             observation, reward, done, _, _ = env.step(action)
-            new_state = discretizer(observation)
+            new_obs = discretizer(observation)
 
             ## TRAINING
             if not done:
-                max_future_q = np.max(q_table[current_obs])
+                max_future_q = np.max(q_table[new_obs])
                 current_q = q_table[current_obs + (action,)]
                 new_q = (1-LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
                 q_table[current_obs + (action,)] = new_q
-                print(new_q) # new_q isn't changing
+                # print(new_q) # new_q isn't changing
 
-            current_state = new_state
+            current_obs = new_obs
             score += reward
             # env.render()
 
-            # print(current_state, observation)
+            # print(current_obs, observation)
         scores.append(score)
-        # print(f"Episode {e}, score {score}")
+        print(f"Episode {e}, score {score}")
         if score > 500:
             break
         e += 1
