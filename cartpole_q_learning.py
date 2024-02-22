@@ -13,15 +13,15 @@ if __name__=="__main__":
     # only working with obs[0] and obs[2], since others can have value of +-inf, not good for q-learning
     max_obs_values = env.observation_space.high
     min_obs_values = env.observation_space.low
-    max_obs_values = np.array([max_obs_values[0], np.rad2deg(max_obs_values[2])])/2
-    min_obs_values = np.array([min_obs_values[0], np.rad2deg(min_obs_values[2])])/2
+    max_obs_values = np.array([max_obs_values[0], max_obs_values[2]])/2
+    min_obs_values = np.array([min_obs_values[0], min_obs_values[2]])/2
 
     ## DISCRETIZING
     DISCRETE_OBS_SPACE_SIZE = [20]* len(max_obs_values) # these are the what the max values will corresponds to
     discrete_obs_space_step_size = (max_obs_values - min_obs_values) / DISCRETE_OBS_SPACE_SIZE
 
     def discretizer(obs):
-        obs = np.array([obs[0], obs[1]])
+        obs = np.array([obs[0], obs[2]])
         discrete_obs = (obs - min_obs_values)/discrete_obs_space_step_size
         return tuple(discrete_obs.astype(np.int16)) # tuple to make indexing easier
     
@@ -52,7 +52,6 @@ if __name__=="__main__":
             ## TRAINING
             if not done:
                 max_future_q = np.max(q_table[new_obs,:])
-                print(max_future_q)
                 current_q = q_table[current_obs + (action,)]
                 new_q = (1-LEARNING_RATE) * current_q + LEARNING_RATE * (reward + DISCOUNT * max_future_q)
                 q_table[current_obs + (action,)] = new_q
@@ -64,8 +63,8 @@ if __name__=="__main__":
             # env.render()
             # print(current_obs, observation)
         scores.append(score)
-        # print(f"Episode {e}, score {score}")
-        if score > 1500:
+        print(f"Episode {e}, score {score}")
+        if score > 800:
             break
         # e += 1
 
