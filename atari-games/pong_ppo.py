@@ -2,7 +2,6 @@ import gymnasium as gym
 
 env = gym.make("ALE/Pong-v5", render_mode = "human")
 
-
 observation = env.reset()
 num_steps = 1000
 total_reward = 0
