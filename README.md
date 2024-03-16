@@ -5,7 +5,6 @@ Following along the [OpenAI's spinning up](https://spinningup.openai.com/en/late
 ## TODOs
 - [x] PID
 - [x] Q-learning
-- [ ] Policy Optimization, PO
 - [ ] Policy Gradient
 - [ ] Deep Q-network, DQN
 - [ ] A2C
