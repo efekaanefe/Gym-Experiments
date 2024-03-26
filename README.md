@@ -1,4 +1,4 @@
-# Gym-Experiments
+# RL-Experiments
 
 Following along the [OpenAI's spinning up](https://spinningup.openai.com/en/latest/index.html) and implementing RL algorithms using pytorch.
 
